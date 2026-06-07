@@ -150,7 +150,7 @@ nav {
 }
 .btn-ghost:hover { border-color: var(--wisteria); color: var(--wisteria); box-shadow: 0 0 20px rgba(185,167,228,0.15); }
  
-/* ── CATEGORIES ── */
+/*CATEGORIES*/
 .categories {
   position: relative; z-index: 5;
   display: flex; justify-content: center; flex-wrap: wrap;
@@ -163,7 +163,7 @@ nav {
 .cat-gem { font-size: 0.75rem; }
 .cat-name { font-family: 'Cinzel', serif; font-size: 0.65rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--text-muted); }
  
-/* ── TICKER ── */
+/*TICKER*/
 .ticker-wrap {
   position: relative; z-index: 5; overflow: hidden; padding: 0.65rem 0;
   border-bottom: 1px solid var(--border-soft);
@@ -175,7 +175,7 @@ nav {
 .ticker-item span { color: var(--royal-gold); opacity: 0.6; margin-right: 3rem; }
 @keyframes ticker { 0%{transform:translateX(0);} 100%{transform:translateX(-50%);} }
  
-/* ── STAT BAR ── */
+/*STAT BAR*/
 .stat-bar {
   position: relative; z-index: 5; display: flex; justify-content: center;
   border-bottom: 1px solid var(--border-soft); background: rgba(75,59,110,0.12);
@@ -186,7 +186,7 @@ nav {
 .stat-num { font-family: 'Cinzel Decorative', serif; font-size: 1.8rem; font-weight: 700; background: linear-gradient(135deg, var(--royal-gold), var(--wisteria)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; line-height: 1; margin-bottom: 0.5rem; }
 .stat-label { font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--text-dim); font-family: 'Cinzel', serif; }
  
-/* ── FEATURES ── */
+/*FEATURES*/
 .features { position: relative; z-index: 5; padding: 5rem 4rem 6rem; }
 .section-header { text-align: center; margin-bottom: 3.5rem; }
 .section-eyebrow { font-family: 'Cinzel', serif; font-size: 0.65rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--sage-green); opacity: 0.85; margin-bottom: 0.75rem; }
@@ -205,7 +205,7 @@ nav {
 .card-title { font-family: 'Cinzel', serif; font-size: 0.95rem; font-weight: 600; color: var(--warm-cream); margin-bottom: 0.7rem; line-height: 1.4; }
 .card-desc { font-size: 0.8rem; font-weight: 300; color: var(--text-muted); line-height: 1.75; }
  
-/* ── FOOTER ── */
+/*FOOTER*/
 footer {
   position: relative; z-index: 5; border-top: 1px solid var(--border-soft);
   padding: 1.5rem 3.5rem; display: flex; align-items: center; justify-content: space-between;
