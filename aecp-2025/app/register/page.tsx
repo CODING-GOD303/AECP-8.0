@@ -2,20 +2,82 @@
 
 import { useState } from "react";
 import StarField from "@/components/Stars-bg";
+import { supabase } from "@/lib/supabase";
+
+type Registration = {
+  full_name: string;
+  student_id: string;
+  email: string;
+  phone: string;
+  department: string;
+  year: string;
+  category: string;
+  notes: string;
+};
 
 export default function Register() {
   const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [lastEntry, setLastEntry] = useState<Registration | null>(null);
 
-  function handleSubmit(e: React.FormEvent) {
+  const [form, setForm] = useState({
+    full_name: "",
+    student_id: "",
+    email: "",
+    phone: "",
+    department: "",
+    year: "",
+    category: "",
+    notes: "",
+  });
+
+  function update(field: keyof typeof form, value: string) {
+    setForm((prev) => ({ ...prev, [field]: value }));
+  }
+
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+
+    if (!form.category) {
+      setError("Please select a competition category.");
+      return;
+    }
+
+    setError("");
+    setLoading(true);
+
+    const { error: dbError } = await supabase
+      .from("registrations")
+      .insert([form]);
+
+    setLoading(false);
+
+    if (dbError) {
+      setError("Something went wrong: " + dbError.message);
+      return;
+    }
+
+    setLastEntry(form);
     setSubmitted(true);
   }
 
   function resetForm() {
     setSubmitted(false);
+    setLastEntry(null);
+    setForm({
+      full_name: "",
+      student_id: "",
+      email: "",
+      phone: "",
+      department: "",
+      year: "",
+      category: "",
+      notes: "",
+    });
   }
 
-  return (
+return (
     <>
       {/* Background */}
       <div
@@ -69,37 +131,20 @@ export default function Register() {
           </p>
 
           <div className="flex flex-col gap-4">
-            <div className="flex items-start gap-4 rounded-xl border" style={{ padding: "16px 20px", background: "rgba(47,75,58,0.2)", borderColor: "rgba(107,128,111,0.2)" }}>
-              <div className="text-lg" style={{ marginTop: "1px" }}>📅</div>
-              <div>
-                <div className="font-cinzel text-[0.62rem] tracking-[0.15em] uppercase mb-1" style={{ color: "rgba(242,211,122,0.65)" }}>Event Date</div>
-                <div className="text-[0.82rem] font-light text-warm-cream/55">To be announced — stay tuned</div>
+            {[
+              { icon: "📅", label: "Event Date", val: "To be announced — stay tuned" },
+              { icon: "📍", label: "Venue", val: "Politeknik Negeri Bandung, West Java" },
+              { icon: "🏆", label: "Categories", val: "Speech · Debate · Story Telling · Essay · Spelling Bee" },
+              { icon: "✨", label: "Registration", val: "Open — deadline TBA" },
+            ].map((item) => (
+              <div key={item.label} className="flex items-start gap-4 rounded-xl border" style={{ padding: "16px 20px", background: "rgba(47,75,58,0.2)", borderColor: "rgba(107,128,111,0.2)" }}>
+                <div className="text-lg" style={{ marginTop: "1px" }}>{item.icon}</div>
+                <div>
+                  <div className="font-cinzel text-[0.62rem] tracking-[0.15em] uppercase mb-1" style={{ color: "rgba(242,211,122,0.65)" }}>{item.label}</div>
+                  <div className="text-[0.82rem] font-light text-warm-cream/55">{item.val}</div>
+                </div>
               </div>
-            </div>
-
-            <div className="flex items-start gap-4 rounded-xl border" style={{ padding: "16px 20px", background: "rgba(47,75,58,0.2)", borderColor: "rgba(107,128,111,0.2)" }}>
-              <div className="text-lg" style={{ marginTop: "1px" }}>📍</div>
-              <div>
-                <div className="font-cinzel text-[0.62rem] tracking-[0.15em] uppercase mb-1" style={{ color: "rgba(242,211,122,0.65)" }}>Venue</div>
-                <div className="text-[0.82rem] font-light text-warm-cream/55">Politeknik Negeri Bandung, West Java</div>
-              </div>
-            </div>
-
-            <div className="flex items-start gap-4 rounded-xl border" style={{ padding: "16px 20px", background: "rgba(47,75,58,0.2)", borderColor: "rgba(107,128,111,0.2)" }}>
-              <div className="text-lg" style={{ marginTop: "1px" }}>🏆</div>
-              <div>
-                <div className="font-cinzel text-[0.62rem] tracking-[0.15em] uppercase mb-1" style={{ color: "rgba(242,211,122,0.65)" }}>Categories</div>
-                <div className="text-[0.82rem] font-light text-warm-cream/55">Speech · Debate · Story Telling · Essay · Spelling Bee</div>
-              </div>
-            </div>
-
-            <div className="flex items-start gap-4 rounded-xl border" style={{ padding: "16px 20px", background: "rgba(47,75,58,0.2)", borderColor: "rgba(107,128,111,0.2)" }}>
-              <div className="text-lg" style={{ marginTop: "1px" }}>✨</div>
-              <div>
-                <div className="font-cinzel text-[0.62rem] tracking-[0.15em] uppercase mb-1" style={{ color: "rgba(242,211,122,0.65)" }}>Registration</div>
-                <div className="text-[0.82rem] font-light text-warm-cream/55">Open — deadline TBA</div>
-              </div>
-            </div>
+            ))}
           </div>
         </div>
 
@@ -121,63 +166,52 @@ export default function Register() {
                 <form onSubmit={handleSubmit}>
                   <div className="grid md:grid-cols-2" style={{ gap: "18px" }}>
 
-                    <div className="flex flex-col" style={{ gap: "8px" }}>
-                      <label className="font-cinzel text-[0.6rem] tracking-[0.18em] uppercase text-warm-cream/45">Full Name</label>
-                      <input type="text" placeholder="Your full name" required
-                        className="w-full rounded-lg border border-wisteria/20 text-warm-cream outline-none focus:border-wisteria"
-                        style={{ padding: "12px 16px", background: "rgba(247,242,228,0.05)" }} />
-                    </div>
+                    {[
+                      { field: "full_name", label: "Full Name", type: "text", placeholder: "Your full name" },
+                      { field: "student_id", label: "Student ID", type: "text", placeholder: "e.g. 221511001" },
+                      { field: "email", label: "Email Address", type: "email", placeholder: "you@student.polban.ac.id" },
+                      { field: "phone", label: "WhatsApp Number", type: "tel", placeholder: "+62 8xx xxxx xxxx" },
+                    ].map((input) => (
+                      <div key={input.field} className="flex flex-col" style={{ gap: "8px" }}>
+                        <label className="font-cinzel text-[0.6rem] tracking-[0.18em] uppercase text-warm-cream/45">{input.label}</label>
+                        <input
+                          type={input.type}
+                          placeholder={input.placeholder}
+                          required
+                          value={form[input.field as keyof typeof form]}
+                          onChange={(e) => update(input.field as keyof typeof form, e.target.value)}
+                          className="w-full rounded-lg border border-wisteria/20 text-warm-cream outline-none focus:border-wisteria"
+                          style={{ padding: "12px 16px", background: "rgba(247,242,228,0.05)" }}
+                        />
+                      </div>
+                    ))}
 
-                    <div className="flex flex-col" style={{ gap: "8px" }}>
-                      <label className="font-cinzel text-[0.6rem] tracking-[0.18em] uppercase text-warm-cream/45">Student ID</label>
-                      <input type="text" placeholder="e.g. 221511001" required
-                        className="w-full rounded-lg border border-wisteria/20 text-warm-cream outline-none focus:border-wisteria"
-                        style={{ padding: "12px 16px", background: "rgba(247,242,228,0.05)" }} />
-                    </div>
-
-                    <div className="flex flex-col" style={{ gap: "8px" }}>
-                      <label className="font-cinzel text-[0.6rem] tracking-[0.18em] uppercase text-warm-cream/45">Email Address</label>
-                      <input type="email" placeholder="you@student.polban.ac.id" required
-                        className="w-full rounded-lg border border-wisteria/20 text-warm-cream outline-none focus:border-wisteria"
-                        style={{ padding: "12px 16px", background: "rgba(247,242,228,0.05)" }} />
-                    </div>
-
-                    <div className="flex flex-col" style={{ gap: "8px" }}>
-                      <label className="font-cinzel text-[0.6rem] tracking-[0.18em] uppercase text-warm-cream/45">WhatsApp Number</label>
-                      <input type="tel" placeholder="+62 8xx xxxx xxxx" required
-                        className="w-full rounded-lg border border-wisteria/20 text-warm-cream outline-none focus:border-wisteria"
-                        style={{ padding: "12px 16px", background: "rgba(247,242,228,0.05)" }} />
-                    </div>
-
-                    <div className="flex flex-col" style={{ gap: "8px" }}>
-                      <label className="font-cinzel text-[0.6rem] tracking-[0.18em] uppercase text-warm-cream/45">Department / Jurusan</label>
-                      <select required defaultValue=""
-                        className="w-full rounded-lg border border-wisteria/20 text-warm-cream outline-none focus:border-wisteria"
-                        style={{ padding: "12px 16px", background: "rgba(247,242,228,0.05)" }}>
-                        <option value="" disabled>Select your department</option>
-                        <option>Teknik Sipil</option>
-                        <option>Teknik Mesin</option>
-                        <option>Teknik Elektro</option>
-                        <option>Teknik Kimia</option>
-                        <option>Akuntansi</option>
-                        <option>Administrasi Niaga</option>
-                        <option>Teknik Informatika</option>
-                        <option>Bahasa Inggris</option>
-                      </select>
-                    </div>
-
-                    <div className="flex flex-col" style={{ gap: "8px" }}>
-                      <label className="font-cinzel text-[0.6rem] tracking-[0.18em] uppercase text-warm-cream/45">Year / Angkatan</label>
-                      <select required defaultValue=""
-                        className="w-full rounded-lg border border-wisteria/20 text-warm-cream outline-none focus:border-wisteria"
-                        style={{ padding: "12px 16px", background: "rgba(247,242,228,0.05)" }}>
-                        <option value="" disabled>Select year</option>
-                        <option>2024 (1st Year)</option>
-                        <option>2023 (2nd Year)</option>
-                        <option>2022 (3rd Year)</option>
-                        <option>2021 (4th Year)</option>
-                      </select>
-                    </div>
+                    {[
+                      {
+                        field: "department", label: "Department / Jurusan",
+                        options: ["Teknik Sipil", "Teknik Mesin", "Teknik Elektro", "Teknik Kimia", "Akuntansi", "Administrasi Niaga", "Teknik Informatika", "Bahasa Inggris"],
+                        placeholder: "Select your department",
+                      },
+                      {
+                        field: "year", label: "Year / Angkatan",
+                        options: ["2024 (1st Year)", "2023 (2nd Year)", "2022 (3rd Year)", "2021 (4th Year)"],
+                        placeholder: "Select year",
+                      },
+                    ].map((sel) => (
+                      <div key={sel.field} className="flex flex-col" style={{ gap: "8px" }}>
+                        <label className="font-cinzel text-[0.6rem] tracking-[0.18em] uppercase text-warm-cream/45">{sel.label}</label>
+                        <select
+                          required
+                          value={form[sel.field as keyof typeof form]}
+                          onChange={(e) => update(sel.field as keyof typeof form, e.target.value)}
+                          className="w-full rounded-lg border border-wisteria/20 text-warm-cream outline-none focus:border-wisteria"
+                          style={{ padding: "12px 16px", background: "#2d1f4e" }}
+                        >
+                          <option value="" disabled>{sel.placeholder}</option>
+                          {sel.options.map((o) => <option key={o}>{o}</option>)}
+                        </select>
+                      </div>
+                    ))}
 
                     {/* CATEGORY PICKER */}
                     <div className="md:col-span-2 flex flex-col" style={{ gap: "12px" }}>
@@ -185,66 +219,86 @@ export default function Register() {
                       <label className="font-cinzel text-[0.6rem] tracking-[0.18em] uppercase text-warm-cream/45">Competition Category</label>
                       <div className="grid grid-cols-5" style={{ gap: "10px" }}>
                         {[
-                          { id: "speech", emoji: "💜", label: "Speech" },
-                          { id: "debate", emoji: "🌿", label: "Debate" },
-                          { id: "story", emoji: "✨", label: "Story Telling" },
-                          { id: "essay", emoji: "📜", label: "Essay Writing" },
-                          { id: "spell", emoji: "🔮", label: "Spelling Bee" },
-                        ].map((cat) => (
-                          <label
-                            key={cat.id}
-                            className="flex flex-col items-center justify-center rounded-lg border cursor-pointer transition-all"
-                            style={{
-                              padding: "12px 8px",
-                              gap: "6px",
-                              background: "rgba(247,242,228,0.04)",
-                              borderColor: "rgba(185,167,228,0.18)",
-                              textAlign: "center",
-                            }}
-                          >
-                            <input type="radio" name="category" value={cat.label} required style={{ display: "none" }} />
-                            <span style={{ fontSize: "1rem" }}>{cat.emoji}</span>
-                            <span className="font-cinzel text-warm-cream/50" style={{ fontSize: "0.5rem", letterSpacing: "0.08em", textTransform: "uppercase", lineHeight: 1.4 }}>{cat.label}</span>
-                          </label>
-                        ))}
+                          { emoji: "💜", label: "Speech" },
+                          { emoji: "🌿", label: "Debate" },
+                          { emoji: "✨", label: "Story Telling" },
+                          { emoji: "📜", label: "Essay Writing" },
+                          { emoji: "🔮", label: "Spelling Bee" },
+                        ].map((cat) => {
+                          const isSelected = form.category === cat.label;
+                          return (
+                            <label
+                              key={cat.label}
+                              className="flex flex-col items-center justify-center rounded-lg border cursor-pointer transition-all"
+                              style={{
+                                padding: "12px 8px", gap: "6px", textAlign: "center",
+                                background: isSelected ? "rgba(75,59,110,0.5)" : "rgba(247,242,228,0.04)",
+                                borderColor: isSelected ? "#B9A7E4" : "rgba(185,167,228,0.18)",
+                                boxShadow: isSelected ? "0 0 16px rgba(185,167,228,0.25)" : "none",
+                              }}
+                            >
+                              <input type="radio" name="category" value={cat.label} checked={isSelected} onChange={(e) => update("category", e.target.value)} style={{ display: "none" }} />
+                              <span style={{ fontSize: "1rem" }}>{cat.emoji}</span>
+                              <span className="font-cinzel text-warm-cream/50" style={{ fontSize: "0.5rem", letterSpacing: "0.08em", textTransform: "uppercase", lineHeight: 1.4 }}>{cat.label}</span>
+                            </label>
+                          );
+                        })}
                       </div>
+                      {error && <div style={{ color: "#f472b6", fontSize: "0.75rem" }}>{error}</div>}
                     </div>
 
                     <div className="md:col-span-2 flex flex-col" style={{ gap: "8px" }}>
                       <label className="font-cinzel text-[0.6rem] tracking-[0.18em] uppercase text-warm-cream/45">
                         Additional Notes <span style={{ color: "rgba(247,242,228,0.25)", fontSize: "0.55rem" }}>(optional)</span>
                       </label>
-                      <textarea rows={3} placeholder="Anything you'd like us to know..."
+                      <textarea
+                        rows={3}
+                        placeholder="Anything you'd like us to know..."
+                        value={form.notes}
+                        onChange={(e) => update("notes", e.target.value)}
                         className="w-full rounded-lg border border-wisteria/20 text-warm-cream outline-none focus:border-wisteria resize-none"
-                        style={{ padding: "12px 16px", background: "rgba(247,242,228,0.05)" }} />
+                        style={{ padding: "12px 16px", background: "rgba(247,242,228,0.05)" }}
+                      />
                     </div>
                   </div>
 
                   <button
                     type="submit"
-                    className="w-full font-cinzel font-semibold tracking-[0.18em] uppercase rounded-xl text-warm-cream bg-gradient-to-br from-mystic-purple to-lavender hover:-translate-y-0.5 transition-all"
+                    disabled={loading}
+                    className="w-full font-cinzel font-semibold tracking-[0.18em] uppercase rounded-xl text-warm-cream bg-gradient-to-br from-mystic-purple to-lavender transition-all"
                     style={{
                       padding: "16px",
                       fontSize: "0.82rem",
                       marginTop: "24px",
                       boxShadow: "0 0 28px rgba(135,115,198,0.25)",
+                      opacity: loading ? 0.7 : 1,
+                      cursor: loading ? "not-allowed" : "pointer",
                     }}
                   >
-                    ✦ Submit Registration ✦
+                    {loading ? "Submitting..." : "✦ Submit Registration ✦"}
                   </button>
                 </form>
 
-                <div className="text-center" style={{ marginTop: "20px", fontSize: "0.72rem", fontWeight: 300, color: "rgba(247,242,228,0.28)" }}>
-                  Already registered? <a href="#" className="text-wisteria hover:text-royal-gold" style={{ textDecoration: "none" }}>Check your status →</a>
+                <div className="text-center" style={{ marginTop: "20px", fontSize: "0.72rem", color: "rgba(247,242,228,0.28)" }}>
+                  Already registered? <a href="#" className="text-wisteria hover:text-royal-gold no-underline">Check your status →</a>
                 </div>
               </div>
             ) : (
-              <div className="flex flex-col items-center justify-center text-center" style={{ padding: "48px 32px", gap: "20px" }}>
+              <div className="flex flex-col items-center justify-center text-center relative" style={{ padding: "48px 32px", gap: "16px" }}>
                 <div style={{ fontSize: "3.5rem" }}>🌟</div>
-                <div className="font-cinzel-deco font-bold bg-gradient-to-br from-royal-gold to-wisteria bg-clip-text text-transparent" style={{ fontSize: "1.4rem" }}>You're In!</div>
+                <div className="font-cinzel-deco font-bold bg-gradient-to-br from-royal-gold to-wisteria bg-clip-text text-transparent" style={{ fontSize: "1.4rem" }}>You&apos;re In!</div>
                 <p className="font-light text-warm-cream/45" style={{ fontSize: "0.85rem", maxWidth: "32ch", lineHeight: 1.7 }}>
-                  Your registration has been received. We&apos;ll send a confirmation to your email shortly.
+                  Your registration has been saved successfully.
                 </p>
+                {lastEntry && (
+                  <div className="w-full text-left rounded-xl border" style={{ padding: "16px 20px", background: "rgba(47,75,58,0.15)", borderColor: "rgba(107,128,111,0.2)", fontSize: "0.8rem", lineHeight: 1.8, color: "rgba(247,242,228,0.6)" }}>
+                    <div><strong style={{ color: "#F2D37A" }}>Name:</strong> {lastEntry.full_name}</div>
+                    <div><strong style={{ color: "#F2D37A" }}>Student ID:</strong> {lastEntry.student_id}</div>
+                    <div><strong style={{ color: "#F2D37A" }}>Email:</strong> {lastEntry.email}</div>
+                    <div><strong style={{ color: "#F2D37A" }}>Category:</strong> {lastEntry.category}</div>
+                    <div><strong style={{ color: "#F2D37A" }}>Department:</strong> {lastEntry.department}</div>
+                  </div>
+                )}
                 <button
                   onClick={resetForm}
                   className="font-cinzel text-wisteria border border-wisteria/40 rounded-full bg-transparent hover:bg-wisteria/10 transition-all"
@@ -262,9 +316,9 @@ export default function Register() {
       <footer className="relative z-5 border-t border-wisteria/20 flex items-center justify-between bg-deep-charcoal/50 backdrop-blur-md" style={{ padding: "24px 56px" }}>
         <div className="font-cinzel text-[0.6rem] tracking-[0.15em] text-warm-cream/30">© 2025 AECP · Politeknik Negeri Bandung</div>
         <div className="flex gap-8">
-          <a href="#" className="text-[0.6rem] tracking-[0.1em] uppercase text-warm-cream/30 hover:text-wisteria no-underline transition-colors">Contact</a>
-          <a href="#" className="text-[0.6rem] tracking-[0.1em] uppercase text-warm-cream/30 hover:text-wisteria no-underline transition-colors">About</a>
-          <a href="#" className="text-[0.6rem] tracking-[0.1em] uppercase text-warm-cream/30 hover:text-wisteria no-underline transition-colors">Privacy</a>
+          {["Contact", "About", "Privacy"].map((link) => (
+            <a key={link} href="#" className="text-[0.6rem] tracking-[0.1em] uppercase text-warm-cream/30 hover:text-wisteria no-underline transition-colors">{link}</a>
+          ))}
         </div>
       </footer>
     </>
