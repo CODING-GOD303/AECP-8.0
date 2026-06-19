@@ -3,7 +3,6 @@ import StarField from "@/components/Stars-bg";
 export default function Home() {
   return (
     <>
-      {/* Background */}
       <div
         className="fixed inset-0 z-0"
         style={{
@@ -16,7 +15,6 @@ export default function Home() {
         }}
       />
 
-      {/* Floating orbs */}
       <div className="fixed -top-24 -left-24 w-[420px] h-[420px] rounded-full blur-[90px] bg-mystic-purple/35 animate-float pointer-events-none z-0" />
       <div className="fixed top-1/5 -right-20 w-[300px] h-[300px] rounded-full blur-[90px] bg-forest-green/30 animate-float pointer-events-none z-0" style={{ animationDelay: "-4s" }} />
       <div className="fixed -bottom-24 left-[35%] w-[360px] h-[360px] rounded-full blur-[90px] bg-wisteria/15 animate-float pointer-events-none z-0" style={{ animationDelay: "-6s" }} />
@@ -24,10 +22,8 @@ export default function Home() {
 
       <StarField />
 
-      {/* HERO */}
       <section className="relative z-5 min-h-[calc(100vh-77px)] flex flex-col items-center justify-center text-center px-8 py-20">
 
-        {/* Magic circle rings */}
         <div className="absolute w-[580px] h-[580px] rounded-full top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none">
           <div className="absolute inset-0 rounded-full border border-wisteria/10 animate-spin-slow" />
           <div className="absolute inset-10 rounded-full border border-royal-gold/[0.07] animate-spin-reverse" />
@@ -86,7 +82,7 @@ export default function Home() {
 
         <div className="flex gap-5 items-center flex-wrap justify-center animate-fade-up opacity-0" style={{ animationDelay: "0.8s" }}>
           
-          <a href="/register"
+          <a href="\register"
             className="font-cinzel font-semibold text-[0.78rem] tracking-[0.14em] uppercase rounded-full no-underline text-warm-cream bg-gradient-to-br from-mystic-purple to-lavender shadow-[0_0_30px_rgba(135,115,198,0.3)] hover:shadow-[0_8px_40px_rgba(135,115,198,0.5)] hover:-translate-y-0.5 transition-all"
             style={{ padding: "28px 64px" }}
           >
@@ -102,7 +98,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* CATEGORY STRIP */}
       <div className="relative z-5 flex justify-center flex-wrap border-t border-b border-wisteria/20 bg-forest-green/15 backdrop-blur-md">
         {[
           { icon: "🟣", name: "Speech" },
@@ -124,7 +119,6 @@ export default function Home() {
         ))}
       </div>
 
-      {/* TICKER */}
       <div
         className="relative z-5 overflow-hidden py-2.5 border-b border-wisteria/20 bg-deep-charcoal/30"
         style={{ maskImage: "linear-gradient(90deg, transparent, black 6%, black 94%, transparent)" }}
@@ -148,7 +142,6 @@ export default function Home() {
         </div>
       </div>
 
-      {/* STAT BAR */}
       <div className="relative z-5 flex justify-center border-b border-wisteria/20 bg-mystic-purple/[0.12]">
         {[
           { num: "—", label: "Participants" },
@@ -171,7 +164,6 @@ export default function Home() {
         ))}
       </div>
 
-      {/* FEATURES */}
      <section className="relative z-5" style={{ padding: "96px 64px" }}>
         <div className="text-center mb-14">
           <div className="font-cinzel text-[0.65rem] tracking-[0.3em] uppercase text-sage-green/85 mb-3">
@@ -221,7 +213,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* FOOTER */}
       <footer className="relative z-5 border-t border-wisteria/20 flex items-center justify-between bg-deep-charcoal/50 backdrop-blur-md" style={{ padding: "24px 56px" }}>
         <div className="font-cinzel text-[0.6rem] tracking-[0.15em] text-warm-cream/30">
           © 2025 AECP · Politeknik Negeri Bandung — All rights reserved

@@ -34,7 +34,7 @@ export default function Navbar() {
       </ul>
 
       
-        <a href="/register"
+        <a href="aecp-2025\app\register\page.tsx"
         className="font-cinzel text-xs tracking-[0.14em] text-royal-gold border border-royal-gold/40 rounded-full bg-royal-gold/10 hover:bg-royal-gold/20 transition-all no-underline"
         style={{ padding: "10px 20px" }}
       >
